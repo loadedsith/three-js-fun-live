@@ -4,6 +4,8 @@ Created on LiveCoding.tv, for the masses.
 
 https://www.livecoding.tv/grahampheath/
 
+This is the front end package. The backend is located here https://github.com/loadedsith/mysteryProjectServer
+
 It has been revealed that the mystery project includes rift support via node-ovrsdk.
 
 It has been pomised that the project will stay abstract.
