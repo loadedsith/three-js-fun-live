@@ -9,7 +9,7 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
 
   var light = new THREE.DirectionalLight( 0xffffff );
   light.position.set( 0, 0, 1 );
-    $scope.scene.push( light );
+  $scope.scene.push( light );
 
   //var cube = new THREE.Mesh( geometry, material );
 
@@ -20,30 +20,67 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   var purple = new THREE.MeshPhongMaterial( { color: 0xaa00aa } );
   var gold = new THREE.MeshPhongMaterial( {metal:true, color: 0xffd700, specular: 0xffd700, shininess: 100 } );
   
-  var redBox = new THREE.Mesh( geometry, red );
-  var ground = new THREE.Mesh( geometry, green );
-  var goldBox = new THREE.Mesh( geometry, gold );
-  var purpleBox = new THREE.Mesh( geometry, purple );
+  var ground = new Physijs.BoxMesh( geometry, red, 0);
 
-  ground.position.y = -1;
-
-  ground.scale.x = 10;
-  ground.scale.y = 0.2;
-  ground.scale.z = 10;
-
-  goldBox.position.z = -1;
-
-  goldBox.position.x = -3;
-
-  purpleBox.position.x = 3;
-
-  goldBox.position.z = -1;
-
-  goldBox.position.x = -3;
-
+  ground.position.y = -8;
+  ground.scale.x = 20;
+  ground.scale.y = 2;
+  ground.scale.z = 20;
+  var x = ground.rotation.x - 0.1;
+  var y = ground.rotation.y;
+  var z = ground.rotation.z;
+  ground.rotation.set(x, y, z);
+  ground.receiveShadow = true;
+  ground.castShadow = true;
   $scope.scene.push( ground );
+
+  var wallXMax = new Physijs.BoxMesh( geometry, green, 0);
+  wallXMax.position.y = -12;
+  wallXMax.position.x = -9;
+  wallXMax.position.z = -19;
+  wallXMax.receiveShadow = true;
+  wallXMax.castShadow = true;
+  wallXMax.scale.x = 20;
+  wallXMax.scale.y = 6;
+  wallXMax.scale.z = 1;
+  $scope.scene.push( wallXMax );
+
+  var wallXMin = new Physijs.BoxMesh( geometry, purple, 0);
+  wallXMin.position.y = -12;
+  wallXMin.position.x = -9;
+  wallXMin.position.z = 19;
+  wallXMin.receiveShadow = true;
+  wallXMin.castShadow = true;
+  wallXMin.scale.x = 20;
+  wallXMin.scale.y = 6;
+  wallXMin.scale.z = 1;
+  $scope.scene.push( wallXMin );
+
+
+  var goldBox = new THREE.Mesh( geometry, gold );
+  goldBox.position.x = -1;
+  goldBox.position.y = -13;
+  goldBox.position.z = 3;
   $scope.scene.push( goldBox );
+
+
+  var purpleBox = new THREE.Mesh( geometry, purple );
+  purpleBox.position.x = 3;
+  purpleBox.position.y = -1;
+  purpleBox.position.z = -13;
   $scope.scene.push( purpleBox );
+
+
+
+  var sphere = new Physijs.SphereMesh(
+    new THREE.SphereGeometry(5),
+    red
+  );
+  
+  sphere.receiveShadow = true;
+  sphere.castShadow = true;
+
+  $scope.scene.push( sphere );
 
 
   var lights = [
@@ -104,34 +141,37 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
       }
     }  //111
   ];
-  $scope.flies = [];
-  for (var i = lights.length - 1; i >= 0; i--) {
-    var spot = new THREE.PointLight( lights[i].color );
-
-    spot.position.z = (Math.random() * 5) - 2.5;
-    spot.position.x = (Math.random() * 5) - 2.5;
-    spot.position.y = (Math.random() * 5) - 2.5;
-    var mesh = new THREE.Mesh( geometry, red );
-    mesh.scale.x = 0.2;
-    mesh.scale.y = 0.2;
-    mesh.scale.z = 0.2;
-    $scope.flies.push({spot:spot, mesh: mesh});
-    $scope.scene.push( spot );
-    $scope.scene.push( mesh );
-
+  
+  $scope.makeFlies = function() {
+    var flies = [];
+    for (var i = lights.length - 1; i >= 0; i--) {
+      var spot = new THREE.PointLight( lights[i].color );
+      spot.position.z = (Math.random() * 5) - 2.5;
+      spot.position.x = (Math.random() * 5) - 2.5;
+      spot.position.y = (Math.random() * 5) - 2.5;
+      var mesh = new THREE.Mesh( geometry, red );
+      mesh.scale.x = 0.2;
+      mesh.scale.y = 0.2;
+      mesh.scale.z = 0.2;
+      flies.push({spot:spot, mesh: mesh});
+      $scope.scene.push( spot );
+      $scope.scene.push( mesh );
+    }
+    return flies;
   }
 
 
   // $scope.scene.push( cube );
 
+  $scope.flies = $scope.makeFlies();
+  
 
-  var seedX = Math.random();
-  var seedY = Math.random();
 
   var worldRenderLoop = function () {
+    var seedX = Math.random();
+    var seedY = Math.random();
     for (var i = 0; i <  $scope.flies.length; i++){
       var light =  $scope.flies[i].spot;
-
       var mesh =  $scope.flies[i].mesh;
       var max = 10;
       light.position.x = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.x)) - (max/2);
@@ -141,6 +181,9 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
       mesh.position.y = max + (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.y)) - (max/2);
       mesh.position.z = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.z)) - (max/2);
     }
+
+    
+
   }
 
   var cubeRenderLoop = function () {
@@ -170,6 +213,7 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
 
   socket.on('location', function(pose) {
     $scope.pose = pose;
+    console.log(pose)
     $scope.$broadcast('location',pose);
   });
 
