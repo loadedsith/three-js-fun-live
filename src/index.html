@@ -51,12 +51,32 @@
 <script src="./app/vendor/ammo.js"></script>
 <script>
     window.addEventListener("load", function() {
-    if (navigator.getVRDevices) {
-        navigator.getVRDevices().then(vrDeviceCallback);
-    } else if (navigator.mozGetVRDevices) {
-        navigator.mozGetVRDevices(vrDeviceCallback);
+        if (navigator.getVRDevices) {
+            navigator.getVRDevices().then(vrDeviceCallback);
+
+        } else if (navigator.mozGetVRDevices) {
+            navigator.mozGetVRDevices(vrDeviceCallback);
+        } else {
+            console.log('no devices')
+        }
+    }, false);
+
+    function vrDeviceCallback(vrdevs) {
+        var vrHMD;
+        for (var i = 0; i < vrdevs.length; ++i) {
+            if (vrdevs[i] instanceof HMDVRDevice) {
+                vrHMD = vrdevs[i];
+                break;
+            }
+        }
+        for (var i = 0; i < vrdevs.length; ++i) {
+            if (vrdevs[i] instanceof PositionSensorVRDevice &&
+                vrdevs[i].hardwareUnitId == vrHMD.hardwareUnitId) {
+                vrHMDSensor = vrdevs[i];
+                break;
+            }
+        }
     }
-}, false);
 </script>
   </body>
 </html>

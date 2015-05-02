@@ -1,7 +1,12 @@
-<div class="container">
+<div class="container" ng-keydown="keyDown">
   <div class="row">
     <div class="large-12 large-text-center columns">
-      <zthree scene="scene" pose="pose"></zthree>
+      <zthree scene="scene" pose="pose" gravity="gravity" camera="camera"></zthree>
     </div>
   </div>
+  <pre>
+  X<input type="text" value="{{x}}">
+	Y<input type="text" value="{{y}}">
+	Z<input type="text" value="{{z}}">
+	</pre>
 </div>

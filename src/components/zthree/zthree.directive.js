@@ -6,7 +6,9 @@ angular.module('mysteryProject')
 	  	restrict: 'E',
 	  	scope:{
 	  		scene:'=',
-	  		pose:'='
+	  		pose:'=',	
+	  		camera:'=',	
+	  		gravity:'='
 	  	},
 	    template: '<canvas></canvas>',
 	    link: function (scope, element, attrs) {
@@ -14,15 +16,9 @@ angular.module('mysteryProject')
    			console.log('Zthree directive reporting in.');
  				// var scene = new THREE.Scene();
 				var scene = new Physijs.Scene;
-
-  			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+				var camera = scope.camera;
 		    var renderer = new THREE.WebGLRenderer({canvas:element[0].childNodes[0]});
 		    renderer.setSize( window.innerWidth - 50, window.innerHeight - 20 );
-        
-        camera.position.z = 25;
-        camera.position.y = 4;
-
-        camera.rotation.x = -0.4;
         
         // var vrrenderer = new THREE.VRRenderer(renderer, vrHMD);
 
@@ -36,10 +32,14 @@ angular.module('mysteryProject')
 		    	scene.add(scope.scene[i]);
 		    }
 
-				scene.setGravity(new THREE.Vector3( 0, -30, 0 ));
+				scene.setGravity(scope.gravity);
+
+				
 
 		    function render() {
 		      scene.simulate(); // run physics
+
+					scene.setGravity(scope.gravity);
 
 		    	requestAnimationFrame( render );
 		      renderer.render( scene, camera );

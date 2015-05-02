@@ -2,6 +2,11 @@
 
 angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   $scope.scene = [];
+
+  $scope.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+  $scope.gravity = new THREE.Vector3( 0, -30, 0 );
+  $scope.camera.position.set(0,10,15)
+
   var noise = new Noise(Math.random());
 
   var geometry = new THREE.BoxGeometry( 3, 3, 3 );
@@ -23,13 +28,10 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   var ground = new Physijs.BoxMesh( geometry, red, 0);
 
   ground.position.y = -8;
+  ground.position.z = -8;
   ground.scale.x = 20;
   ground.scale.y = 2;
   ground.scale.z = 20;
-  var x = ground.rotation.x - 0.1;
-  var y = ground.rotation.y;
-  var z = ground.rotation.z;
-  ground.rotation.set(x, y, z);
   ground.receiveShadow = true;
   ground.castShadow = true;
   $scope.scene.push( ground );
@@ -41,7 +43,7 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   wallXMax.receiveShadow = true;
   wallXMax.castShadow = true;
   wallXMax.scale.x = 20;
-  wallXMax.scale.y = 6;
+  wallXMax.scale.y = 16;
   wallXMax.scale.z = 1;
   $scope.scene.push( wallXMax );
 
@@ -52,9 +54,31 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   wallXMin.receiveShadow = true;
   wallXMin.castShadow = true;
   wallXMin.scale.x = 20;
-  wallXMin.scale.y = 6;
+  wallXMin.scale.y = 16;
   wallXMin.scale.z = 1;
   $scope.scene.push( wallXMin );
+
+  var wallYMax = new Physijs.BoxMesh( geometry, green, 0);
+  wallYMax.position.y = -12;
+  wallYMax.position.x = 19;
+  wallYMax.position.z = 9;
+  wallYMax.receiveShadow = true;
+  wallYMax.castShadow = true;
+  wallYMax.scale.x = 1;
+  wallYMax.scale.y = 16;
+  wallYMax.scale.z = 20;
+  $scope.scene.push( wallYMax );
+
+  var wallYMin = new Physijs.BoxMesh( geometry, purple, 0);
+  wallYMin.position.y = -12;
+  wallYMin.position.x = -19;
+  wallYMin.position.z = 9;
+  wallYMin.receiveShadow = true;
+  wallYMin.castShadow = true;
+  wallYMin.scale.x = 1;
+  wallYMin.scale.y = 16;
+  wallYMin.scale.z = 20;
+  $scope.scene.push( wallYMin );
 
 
   var goldBox = new THREE.Mesh( geometry, gold );
@@ -70,13 +94,17 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   purpleBox.position.z = -13;
   $scope.scene.push( purpleBox );
 
+  var gravityArrow = new THREE.Mesh(  new THREE.CylinderGeometry( 1, 1, 20, 32 ), purple );
+
+  $scope.scene.push( gravityArrow );
+
 
 
   var sphere = new Physijs.SphereMesh(
     new THREE.SphereGeometry(5),
     red
   );
-  
+  sphere.position.z = -14;
   sphere.receiveShadow = true;
   sphere.castShadow = true;
 
@@ -106,8 +134,8 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
        x:Math.random(),
        y:Math.random(),
        z:Math.random()
-      }
-    }, //011
+      
+}    }, //011
     {
       color:0xff4040,
       seeds: {
@@ -165,7 +193,70 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
 
   $scope.flies = $scope.makeFlies();
   
+  document.addEventListener("keydown", keyDownTextField, false);
+ 
 
+  $scope.camera.rotation.x = -0.4;
+  $scope.lat = -180;
+  $scope.lon = 0;
+  
+  $scope.x=0;
+  $scope.y=-30;
+  $scope.z=0;
+
+  function keyDownTextField(e) {
+    // $scope.camera.rotation.x += 0.01; 
+    var weight = 5;
+    console.log('e',e.keyCode)
+    if(e.keyCode === 87){
+      //w
+      $scope.z -= weight;
+    }
+    if(e.keyCode === 83){
+      //s
+      $scope.z += weight;
+    }
+    if(e.keyCode === 68){
+      //d OK
+      $scope.x += weight;
+    }
+    if(e.keyCode === 65){
+      //e OK
+      $scope.x -= weight;
+    }
+      if(e.keyCode === 69){
+      $scope.y += weight;
+    }
+    if(e.keyCode === 81){
+      $scope.y -= weight;
+    }
+
+    // var g = latLonToXYZ($scope.lat, $scope.lon, 10.0)
+    
+    $scope.gravity.set($scope.x, $scope.y, $scope.z);
+    gravityArrow.rotation.set($scope.x/360+180, $scope.y/360+180, $scope.z/360+90)
+
+    // console.log($scope.gravity);
+
+    // var r = latLonToXYZ($scope.lat, $scope.lon, 10);
+    // gravityArrow.lookAt(r)
+    // var keyCode = e.keyCode;
+  }
+
+  var latLonToXYZ = function(lat, lon, max) {
+    var r =  Math.PI / 180.0
+    var cosLat = Math.cos(lat * r);
+    var sinLat = Math.sin(lat * r);
+    var cosLon = Math.cos(lon * r);
+    var sinLon = Math.sin(lon * r);
+
+    var rad = max;
+    var marker = new THREE.Vector3();
+    marker.x = rad * cosLat * cosLon;
+    marker.y = rad * cosLat * sinLon;
+    marker.z = rad * sinLat;
+    return marker;
+  }
 
   var worldRenderLoop = function () {
     var seedX = Math.random();
@@ -181,9 +272,6 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
       mesh.position.y = max + (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.y)) - (max/2);
       mesh.position.z = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.z)) - (max/2);
     }
-
-    
-
   }
 
   var cubeRenderLoop = function () {
