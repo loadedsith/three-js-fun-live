@@ -12,7 +12,7 @@ angular.module('mysteryProject')
 	  	},
 	    template: '<canvas></canvas>',
 	    link: function (scope, element, attrs) {
-   	    Physijs.scripts.worker = '/app/vendor/physijs_worker.js';
+   	    Physijs.scripts.worker = '/vendor/physijs_worker.js';
    			console.log('Zthree directive reporting in.');
  				// var scene = new THREE.Scene();
 				var scene = new Physijs.Scene;

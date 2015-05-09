@@ -94,14 +94,14 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   purpleBox.position.z = -13;
   $scope.scene.push( purpleBox );
 
-  var gravityArrow = new THREE.Mesh(  new THREE.CylinderGeometry( 1, 1, 20, 32 ), purple );
+  var gravityArrow = new THREE.Mesh(  new THREE.CylinderGeometry( 1, 1, 10, 12 ), purple );
 
   $scope.scene.push( gravityArrow );
 
 
 
   var sphere = new Physijs.SphereMesh(
-    new THREE.SphereGeometry(5),
+    new THREE.SphereGeometry(5,32, 32),
     red
   );
   sphere.position.z = -14;
@@ -207,26 +207,37 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   function keyDownTextField(e) {
     // $scope.camera.rotation.x += 0.01; 
     var weight = 5;
-    console.log('e',e.keyCode)
     if(e.keyCode === 87){
       //w
-      $scope.up();
-      // $scope.z -= weight;
+      if (e.shiftKey) {
+        $scope.up();
+      }else{
+        $scope.upGravity();
+      }
     }
     if(e.keyCode === 83){
       //s
-      $scope.down();
-      // $scope.z += weight;
+      if (e.shiftKey) {
+        $scope.down();
+      }else{
+        $scope.downGravity();
+      }
     }
     if(e.keyCode === 68){
-      //d OK
-      $scope.right();
-      // $scope.x += weight;
+      //d
+      if (e.shiftKey) {
+        $scope.right();
+      }else{
+        $scope.rightGravity();
+      }
     }
     if(e.keyCode === 65){
-
-      $scope.left();
-      // $scope.x -= weight;
+      //a
+      if (e.shiftKey) {
+        $scope.left();
+      }else{
+        $scope.leftGravity();
+      }
     }
     if(e.keyCode === 69){
       //e OK
@@ -260,9 +271,10 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
     // var g = latLonToXYZ($scope.lat, $scope.lon, 10.0)
     
     $scope.gravity.set($scope.x, $scope.y, $scope.z);
+    
     gravityArrow.rotation.set($scope.x/360+180, $scope.y/360+180, $scope.z/360+90)
-
-    // console.log($scope.gravity);
+    sphere.__dirtyPosition = true;
+    console.log($scope.gravity);
 
     // var r = latLonToXYZ($scope.lat, $scope.lon, 10);
     // gravityArrow.lookAt(r)
@@ -321,16 +333,29 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
          
 
   $scope.up = function(){
-    $scope.camera.rotation.x  += 0.05;
+    $scope.camera.rotation.x += 0.05;
   };
   $scope.down = function(){
-    $scope.camera.rotation.x  -= 0.05;
+    $scope.camera.rotation.x -= 0.05;
   };
   $scope.left = function(){
-    $scope.camera.rotation.y  += 0.1;
+    $scope.camera.rotation.y += 0.1;
   };
   $scope.right = function(){
-    $scope.camera.rotation.y  -= 0.1 ;
+    $scope.camera.rotation.y -= 0.1 ;
+  };
+
+  $scope.upGravity = function(){
+    $scope.y += 0.05;
+  };
+  $scope.downGravity = function(){
+    $scope.y -= 0.05;
+  };
+  $scope.rightGravity = function(){
+    $scope.x += 0.1;
+  };
+  $scope.leftGravity = function(){
+    $scope.x -= 0.1;
   };
 
   $scope.upPosition = function(){
@@ -345,6 +370,10 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   $scope.rightPosition = function(){
     $scope.camera.position.x  += 0.1;
   };
+
+  $scope.$on('trackGenerated',function(){
+    console.log('trackGenerated Event Recieved');
+  });
 
 
   $scope.scene.renderLoop = cubeRenderLoop;
