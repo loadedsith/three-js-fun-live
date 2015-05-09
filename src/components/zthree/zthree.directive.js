@@ -34,7 +34,10 @@ angular.module('mysteryProject')
 
 				scene.setGravity(scope.gravity);
 
-				
+				scope.$on('trackGenerated',function(event, track){
+    		 scene.add(track);
+    		 console.log('doit')
+  			});
 
 		    function render() {
 		      scene.simulate(); // run physics

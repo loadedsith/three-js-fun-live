@@ -370,8 +370,9 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
     $scope.camera.position.x  += 0.1;
   };
 
-  $scope.$on('trackGenerated',function(){
-    console.log('trackGenerated Event Recieved');
+  $scope.$on('trackGenerated',function(event, track){
+    // track.position.set(10,0,0)
+    $scope.scene.push(track);
   });
 
 
