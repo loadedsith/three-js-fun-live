@@ -1,31 +1,34 @@
 <zthree id="background3d" scene="scene" pose="pose" gravity="gravity" camera="camera"></zthree>
-
-<div id="content" class="container" ng-keydown="keyDown">
+<div id="toggleContent" class='debug' ng-class="{open:openContentDrawer||false}" ng-click="openContentDrawer = !openContentDrawer">
+  <div class="hide">Hide</div>
+  <div class="show">Show</div>
+</div>
+<div id="content" class="container" ng-class="{open:openContentDrawer}" ng-keydown="keyDown">
   <div class="row">
-    <div class="large-12 large-text-center columns">
-      
+    <div class="large-12 large-text-center columns" >
+       <div class="camera dpad">
+        <h4 class="ng-hide">Camera</h4>
+        <button class="up" ng-click="up()">Up</button>
+        <button class="left" ng-click="left()">Left</button><button class="right" ng-click="right()">Right</button>
+        <button class="down" ng-click="down()">Down</button>
+      </div>
+
+      <div class="position dpad">
+        <h4 class="ng-hide">position</h4>
+        <button class="up" ng-click="upPosition()">Up</button>
+        <button class="left" ng-click="leftPosition()">Left</button><button class="right" ng-click="rightPosition()">Right</button>
+        <button class="down" ng-click="downPosition()">Down</button>
+      </div>
+
+      <div class="gravity dpad">
+        <h4 class="ng-hide">gravity</h4>
+        <button class="up" ng-click="upGravity()">Up</button>
+        <button class="left" ng-click="leftGravity()">Left</button><button class="right" ng-click="rightGravity()">Right</button>
+        <button class="down" ng-click="downGravity()">Down</button>
+      </div>
     </div>
   </div>
-  <div class="camera dpad">
-    <h4 class="ng-hide">Camera</h4>
-    <button class="up" ng-click="up()">Up</button>
-    <button class="left" ng-click="left()">Left</button><button class="right" ng-click="right()">Right</button>
-    <button class="down" ng-click="down()">Down</button>
-  </div>
-
-  <div class="position dpad">
-    <h4 class="ng-hide">position</h4>
-    <button class="up" ng-click="upPosition()">Up</button>
-    <button class="left" ng-click="leftPosition()">Left</button><button class="right" ng-click="rightPosition()">Right</button>
-    <button class="down" ng-click="downPosition()">Down</button>
-  </div>
-
-  <div class="gravity dpad">
-    <h4 class="ng-hide">gravity</h4>
-    <button class="up" ng-click="upGravity()">Up</button>
-    <button class="left" ng-click="leftGravity()">Left</button><button class="right" ng-click="rightGravity()">Right</button>
-    <button class="down" ng-click="downGravity()">Down</button>
-  </div>
+ 
 <!-- 
   X<input type="text" value="{{x}}">
 	Y<input type="text" value="{{y}}">
