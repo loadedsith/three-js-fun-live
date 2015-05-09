@@ -210,26 +210,52 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
     console.log('e',e.keyCode)
     if(e.keyCode === 87){
       //w
-      $scope.z -= weight;
+      $scope.up();
+      // $scope.z -= weight;
     }
     if(e.keyCode === 83){
       //s
-      $scope.z += weight;
+      $scope.down();
+      // $scope.z += weight;
     }
     if(e.keyCode === 68){
       //d OK
-      $scope.x += weight;
+      $scope.right();
+      // $scope.x += weight;
     }
     if(e.keyCode === 65){
-      //e OK
-      $scope.x -= weight;
+
+      $scope.left();
+      // $scope.x -= weight;
     }
-      if(e.keyCode === 69){
-      $scope.y += weight;
+    if(e.keyCode === 69){
+      //e OK
+      // $scope.y += weight;
     }
     if(e.keyCode === 81){
-      $scope.y -= weight;
+      // $scope.y -= weight;
     }
+
+    if(e.keyCode === 37){
+      // $scope.y -= weight;
+      $scope.leftPosition();
+    }
+    if(e.keyCode === 38){
+      // $scope.y -= weight;
+      $scope.upPosition();
+
+    }
+    if(e.keyCode === 39){
+      // $scope.y -= weight;
+      $scope.rightPosition();
+
+    }
+    if(e.keyCode === 40){
+      // $scope.y -= weight;
+      $scope.downPosition();
+
+    }
+
 
     // var g = latLonToXYZ($scope.lat, $scope.lon, 10.0)
     
@@ -259,19 +285,19 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   }
 
   var worldRenderLoop = function () {
-    var seedX = Math.random();
-    var seedY = Math.random();
-    for (var i = 0; i <  $scope.flies.length; i++){
-      var light =  $scope.flies[i].spot;
-      var mesh =  $scope.flies[i].mesh;
-      var max = 10;
-      light.position.x = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.x)) - (max/2);
-      light.position.y = max + (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.y)) - (max/2);
-      light.position.z = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.z)) - (max/2);
-      mesh.position.x = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.x)) - (max/2);
-      mesh.position.y = max + (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.y)) - (max/2);
-      mesh.position.z = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.z)) - (max/2);
-    }
+    // var seedX = Math.random();
+    // var seedY = Math.random();
+    // for (var i = 0; i <  $scope.flies.length; i++){
+    //   var light =  $scope.flies[i].spot;
+    //   var mesh =  $scope.flies[i].mesh;
+    //   var max = 10;
+    //   light.position.x = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.x)) - (max/2);
+    //   light.position.y = max + (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.y)) - (max/2);
+    //   light.position.z = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.z)) - (max/2);
+    //   mesh.position.x = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.x)) - (max/2);
+    //   mesh.position.y = max + (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.y)) - (max/2);
+    //   mesh.position.z = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.z)) - (max/2);
+    // }
   }
 
   var cubeRenderLoop = function () {
@@ -293,16 +319,35 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
     cube.rotation.y = rotY * 360;
   };
          
+
+  $scope.up = function(){
+    $scope.camera.rotation.x  += 0.05;
+  };
+  $scope.down = function(){
+    $scope.camera.rotation.x  -= 0.05;
+  };
+  $scope.left = function(){
+    $scope.camera.rotation.y  += 0.1;
+  };
+  $scope.right = function(){
+    $scope.camera.rotation.y  -= 0.1 ;
+  };
+
+  $scope.upPosition = function(){
+    $scope.camera.position.y  += 0.1;
+  };
+  $scope.downPosition = function(){
+    $scope.camera.position.y  -= 0.1 ;
+  };
+  $scope.leftPosition = function(){
+    $scope.camera.position.x  -= 0.1;
+  };
+  $scope.rightPosition = function(){
+    $scope.camera.position.x  += 0.1;
+  };
+
+
   $scope.scene.renderLoop = cubeRenderLoop;
   $scope.scene.renderLoop = worldRenderLoop;
-       
-
-  var socket = io('http://localhost:3001');
-
-  socket.on('location', function(pose) {
-    $scope.pose = pose;
-    console.log(pose)
-    $scope.$broadcast('location',pose);
-  });
 
 });

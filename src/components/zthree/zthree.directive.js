@@ -18,7 +18,7 @@ angular.module('mysteryProject')
 				var scene = new Physijs.Scene;
 				var camera = scope.camera;
 		    var renderer = new THREE.WebGLRenderer({canvas:element[0].childNodes[0]});
-		    renderer.setSize( window.innerWidth - 50, window.innerHeight - 20 );
+		    renderer.setSize( window.innerWidth - 0, window.innerHeight - 0);
         
         // var vrrenderer = new THREE.VRRenderer(renderer, vrHMD);
 
