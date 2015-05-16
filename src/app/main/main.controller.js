@@ -15,9 +15,6 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   light.position.set( 0, 0, 1 );
   $scope.scene.push( light );
 
-  //var cube = new THREE.Mesh( geometry, material );
-
-
   var red = new THREE.MeshPhongMaterial( { color: 0xff0000 } );
   var green = new THREE.MeshPhongMaterial( { color: 0x445511 } );
   var blue = new THREE.MeshPhongMaterial( { color: 0x0000ff } );
@@ -311,26 +308,6 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
     // }
   }
 
-  var cubeRenderLoop = function () {
-
-    var rotX = Math.abs(
-      noise.perlin2(
-        Date.now() / 1000000,
-        seedX
-      )
-    );
-    var rotY = Math.abs(
-      noise.perlin2(
-        Date.now() / 1000000,
-        seedY
-      )
-    );
-
-    cube.rotation.x = rotX * 360;
-    cube.rotation.y = rotY * 360;
-  };
-         
-
   $scope.up = function(){
     $scope.camera.rotation.x += 0.05;
   };
@@ -375,8 +352,6 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
     $scope.scene.push(track);
   });
 
-
-  $scope.scene.renderLoop = cubeRenderLoop;
   $scope.scene.renderLoop = worldRenderLoop;
 
 });
