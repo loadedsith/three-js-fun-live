@@ -21,80 +21,118 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   var purple = new THREE.MeshPhongMaterial( { color: 0xaa00aa } );
   var gold = new THREE.MeshPhongMaterial( {metal:true, color: 0xffd700, specular: 0xffd700, shininess: 100 } );
   
-  var ground = new Physijs.BoxMesh( geometry, red, 0);
 
-  ground.position.y = -8;
-  ground.position.z = -8;
-  ground.scale.x = 20;
-  ground.scale.y = 2;
-  ground.scale.z = 20;
-  ground.receiveShadow = true;
-  ground.castShadow = true;
-  $scope.scene.push( ground );
+  var buildWall = function(config, scene){
+    var geometry = config.geometry||new THREE.BoxGeometry( 3, 3, 3 );
+    var color = config.color||new THREE.MeshPhongMaterial( { color: 0xff0000 } );
+    var wall = new Physijs.BoxMesh(geometry, color , 0);
 
-  var wallXMax = new Physijs.BoxMesh( geometry, green, 0);
-  wallXMax.position.y = -12;
-  wallXMax.position.x = -9;
-  wallXMax.position.z = -19;
-  wallXMax.receiveShadow = true;
-  wallXMax.castShadow = true;
-  wallXMax.scale.x = 20;
-  wallXMax.scale.y = 16;
-  wallXMax.scale.z = 1;
-  $scope.scene.push( wallXMax );
+    wall.position.y = config.position.y || 0;
+    wall.position.x = config.position.x || 0;
+    wall.position.z = config.position.z || 0
 
-  var wallXMin = new Physijs.BoxMesh( geometry, purple, 0);
-  wallXMin.position.y = -12;
-  wallXMin.position.x = -9;
-  wallXMin.position.z = 19;
-  wallXMin.receiveShadow = true;
-  wallXMin.castShadow = true;
-  wallXMin.scale.x = 20;
-  wallXMin.scale.y = 16;
-  wallXMin.scale.z = 1;
-  $scope.scene.push( wallXMin );
+    wall.receiveShadow = config.receiveShadow || true;
+    wall.castShadow = config.castShadow || true;
 
-  var wallYMax = new Physijs.BoxMesh( geometry, green, 0);
-  wallYMax.position.y = -12;
-  wallYMax.position.x = 19;
-  wallYMax.position.z = 9;
-  wallYMax.receiveShadow = true;
-  wallYMax.castShadow = true;
-  wallYMax.scale.x = 1;
-  wallYMax.scale.y = 16;
-  wallYMax.scale.z = 20;
-  $scope.scene.push( wallYMax );
+    wall.renderDepth = 1;
 
-  var wallYMin = new Physijs.BoxMesh( geometry, purple, 0);
-  wallYMin.position.y = -12;
-  wallYMin.position.x = -19;
-  wallYMin.position.z = 9;
-  wallYMin.receiveShadow = true;
-  wallYMin.castShadow = true;
-  wallYMin.scale.x = 1;
-  wallYMin.scale.y = 16;
-  wallYMin.scale.z = 20;
-  $scope.scene.push( wallYMin );
+    wall.scale.x = config.scale.x || 1;
+    wall.scale.y = config.scale.y || 1;
+    wall.scale.z = config.scale.z || 1;
+
+    scene.push( wall );
+  };
+
+  var groundLevel = -20;
+  var wallLength = 27;
+
+  var ground = {
+    color: green,
+    geometery: geometry,
+    position:{
+      x: 0,
+      y: groundLevel,
+      z: 0
+    },
+    scale:{
+      x: 200,
+      y: 2,
+      z: 200
+    }
+  };
+
+  var forward = {
+    color:green,
+    position:{
+      x:0,
+      y:groundLevel,
+      z:-40
+    },
+    scale:{
+      x:wallLength,
+      y:10,
+      z:1
+    }
+  };
+
+  var backward = {
+    color:green,
+    position:{
+      x:0,
+      y:groundLevel,
+      z:40
+    },
+    scale:{
+      x:wallLength,
+      y:10,
+      z:1
+    }
+  };
 
 
-  var goldBox = new THREE.Mesh( geometry, gold );
-  goldBox.position.x = -1;
-  goldBox.position.y = -13;
-  goldBox.position.z = 3;
-  $scope.scene.push( goldBox );
+  var right = {
+    position: {
+      x: 40,
+      y: groundLevel,
+      z: 0
+    },
+    scale: {
+      x: 1,
+      y: 10,
+      z: wallLength
+    }
+  };
 
+  var left = {
+    color: gold,
+    position: {
+      x: -40,
+      y: groundLevel,
+      z: 0
+    },
+    scale: {
+      x: 1,
+      y: 10,
+      z: wallLength
+    }
+  };
 
-  var purpleBox = new THREE.Mesh( geometry, purple );
-  purpleBox.position.x = 3;
-  purpleBox.position.y = -1;
-  purpleBox.position.z = -13;
-  $scope.scene.push( purpleBox );
+  var walls = [
+    forward,
+    backward,
+    left,
+    right,
+    ground
+  ];
+
+  for (var i = walls.length - 1; i >= 0; i--) {
+      buildWall(walls[i], $scope.scene);
+  };
+
 
   var gravityArrow = new THREE.Mesh(  new THREE.CylinderGeometry( 1, 1, 10, 12 ), purple );
 
   $scope.scene.push( gravityArrow );
-
-
 
   var sphere = new Physijs.SphereMesh(
     new THREE.SphereGeometry(5,32, 32),
