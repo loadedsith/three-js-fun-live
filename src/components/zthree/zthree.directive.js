@@ -13,68 +13,106 @@ angular.module('mysteryProject')
 	    template: '<canvas></canvas>',
 	    link: function (scope, element, attrs) {
    	    Physijs.scripts.worker = '/vendor/physijs_worker.js';
-   			console.log('Zthree directive reporting in.');
- 				// var scene = new THREE.Scene();
-				var scene = new Physijs.Scene;
+				var scene = new Physijs.Scene({ fixedTimeStep: 1 / 120 });
 				var camera = scope.camera;
-		    var renderer = new THREE.WebGLRenderer({canvas:element[0].childNodes[0]});
+		    var renderer = new THREE.WebGLRenderer({
+		    	canvas:element[0].childNodes[0],
+	    		antialias: true
+		    });
+
+				var gravity = new THREE.Quaternion();
 		    renderer.setSize( window.innerWidth - 0, window.innerHeight - 0);
-
-    		var controls = new THREE.VRControls( camera );
-
+				
 				/*
 				Apply VR stereo rendering to renderer
 				*/
 				var effect = new THREE.VREffect( renderer );
 				effect.setSize( window.innerWidth, window.innerHeight );
+				
+				renderer.autoClear = false;
+				renderer.setClearColor(0x404040);
 
-        scope.$on('location', function(event,pose) {
-         	camera.rotation.z = pose.z;
-         	camera.rotation.x = pose.x;
-         	camera.rotation.y = pose.y;
-        });
+				scene.fog = new THREE.Fog(0xcacfde, 0, 10000);
 
+    		var controls = new THREE.VRControls( camera );
+
+				var manager = new WebVRManager(renderer, effect);
+			
 		    for(var i = 0; i < scope.scene.length; i++){
 		    	scene.add(scope.scene[i]);
 		    }
 
-				scene.setGravity(scope.gravity);
-
 				scope.$on('trackGenerated',function(event, track){
     		 scene.add(track);
-    		 console.log('doit')
   			});
 
+				var state;
+				var vrHMD;
+				var vrHMDSensor;
+
+				navigator.getVRDevices().then(function(vrdevs){
+					   for (var i = 0; i < vrdevs.length; ++i) {
+       				 if (vrdevs[i] instanceof HMDVRDevice) {
+        		    vrHMD = vrdevs[i];
+        		    break;
+     			    }	
+ 				    }
+				    for (var i = 0; i < vrdevs.length; ++i) {
+				        if (vrdevs[i] instanceof PositionSensorVRDevice &&
+				            vrdevs[i].hardwareUnitId == vrHMD.hardwareUnitId) {
+				            vrHMDSensor = vrdevs[i];
+				            break;
+				        }
+				    }
+				});
+
+
 		    function render() {
+		    	if(vrHMDSensor!==undefined){
+		    		var orientation = vrHMDSensor.getState().orientation;
+		    		gravity.set(
+		    			orientation.x,
+		    			orientation.y,
+		    			orientation.z,
+		    			orientation.w
+	    			);
+		    	}
+		    	
 
 					/*
 					Update VR headset position and apply to camera.
 					*/
 					controls.update();
-
 					/*
 					Render the scene through the VREffect.
 					*/
-					effect.render( scene, camera );
+		    	requestAnimationFrame( render );
 
 		      scene.simulate(); // run physics
+		      scope.gravity = new THREE.Euler().setFromQuaternion(gravity, 'XYZ');
+		      var max = 15;
+		      var offset = 0.0 * max;
+					console.log(gravity.x * max - offset)
+					scene.setGravity(new THREE.Vector3(
+							// gravity.x * max - offset,
+							gravity.z * max - offset,//left and right
+							-1 * (gravity.x * max - offset),
+							0
+						)
+					);
 
-					scene.setGravity(scope.gravity);
 
-
-
-		    	requestAnimationFrame( render );
-		      //renderer.render( scene, camera );
-
-		      if (scope.pose !== undefined) {
-		      	debugger;
-		      }
-
+					if (manager.isVRMode()) {
+						effect.render(scene, camera);
+					} else {
+						renderer.render(scene, camera);
+					}
 		      if (scope.scene.renderLoop !== undefined) {
 		      	if (typeof scope.scene.renderLoop === 'function') {
 		      		scope.scene.renderLoop();
 		      	}
 		      }
+
 		    }
 		    render();
 
