@@ -77,8 +77,11 @@ angular.module('mysteryProject')
 		    			orientation.w
 	    			);
 		    	}
-		    	
-
+		    	 if (scope.scene.renderLoop !== undefined) {
+		      	if (typeof scope.scene.renderLoop === 'function') {
+		      		scope.scene.renderLoop();
+		      	}
+		      }
 					/*
 					Update VR headset position and apply to camera.
 					*/
@@ -96,8 +99,8 @@ angular.module('mysteryProject')
 					scene.setGravity(new THREE.Vector3(
 							// gravity.x * max - offset,
 							gravity.z * max - offset,//left and right
-							-1 * (gravity.x * max - offset),
-							0
+							-30,
+							-1 * (gravity.x * max - offset)
 						)
 					);
 
@@ -107,11 +110,7 @@ angular.module('mysteryProject')
 					} else {
 						renderer.render(scene, camera);
 					}
-		      if (scope.scene.renderLoop !== undefined) {
-		      	if (typeof scope.scene.renderLoop === 'function') {
-		      		scope.scene.renderLoop();
-		      	}
-		      }
+		     
 
 		    }
 		    render();

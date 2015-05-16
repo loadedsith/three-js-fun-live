@@ -4,7 +4,7 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
 
   $scope.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.001, 100 );
   $scope.gravity = new THREE.Vector3( 0, -30, 0 );
-  $scope.camera.position.set(0,10,15)
+  $scope.camera.position.set(0,10,50);
 
   var noise = new Noise(Math.random());
 
@@ -51,13 +51,13 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
     geometery: geometry,
     position:{
       x: 0,
-      y: groundLevel,
+      y: groundLevel-18,
       z: 0
     },
     scale:{
-      x: 200,
-      y: 2,
-      z: 200
+      x: 40,
+      y: 1,
+      z: 40
     }
   };
 
@@ -138,12 +138,23 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
     new THREE.SphereGeometry(5,32, 32),
     red
   );
+
+  // sphere.add($scope.camera);
   sphere.position.z = -14;
   sphere.receiveShadow = true;
   sphere.castShadow = true;
+  sphere.__dirtyPosition = true;
 
   $scope.scene.push( sphere );
 
+  var sphere2 = new Physijs.SphereMesh(
+    new THREE.SphereGeometry(5,32, 32),
+    red
+  );
+  
+  sphere2.position.z = 14;
+  sphere2.__dirtyPosition = true;
+  $scope.scene.push( sphere2 );
 
   var lights = [
     {
@@ -248,7 +259,10 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   }
 
   var worldRenderLoop = function () {
-
+    sphere.__dirtyPosition = true;
+    sphere2.applyCentralImpulse(new THREE.Vector3(0, 0, -200));
+    sphere2.__dirtyPosition = true;
+  
     var seedX = Math.random();
     var seedY = Math.random();
     for (var i = 0; i <  $scope.flies.length; i++){
@@ -267,6 +281,7 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
  
 
   $scope.$on('trackGenerated',function(event, track){
+    // track.position.set(10,0,0)
     $scope.scene.push(track);
   });
 
