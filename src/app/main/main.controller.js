@@ -2,7 +2,7 @@
 angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   $scope.scene = [];
 
-  $scope.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+  $scope.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0, 100 );
   $scope.gravity = new THREE.Vector3( 0, -30, 0 );
   $scope.camera.position.set(0,10,15)
 
