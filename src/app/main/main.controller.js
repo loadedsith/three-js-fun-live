@@ -222,14 +222,8 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
     return flies;
   }
 
-
-  // $scope.scene.push( cube );
-
   $scope.flies = $scope.makeFlies();
   
-  document.addEventListener("keydown", keyDownTextField, false);
- 
-
   $scope.camera.rotation.x = -0.4;
   $scope.lat = -180;
   $scope.lon = 0;
@@ -237,83 +231,6 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   $scope.x=0;
   $scope.y=-30;
   $scope.z=0;
-
-  function keyDownTextField(e) {
-    // $scope.camera.rotation.x += 0.01; 
-    var weight = 5;
-    if(e.keyCode === 87){
-      //w
-      if (e.shiftKey) {
-        $scope.up();
-      }else{
-        $scope.upGravity();
-      }
-    }
-    if(e.keyCode === 83){
-      //s
-      if (e.shiftKey) {
-        $scope.down();
-      }else{
-        $scope.downGravity();
-      }
-    }
-    if(e.keyCode === 68){
-      //d
-      if (e.shiftKey) {
-        $scope.right();
-      }else{
-        $scope.rightGravity();
-      }
-    }
-    if(e.keyCode === 65){
-      //a
-      if (e.shiftKey) {
-        $scope.left();
-      }else{
-        $scope.leftGravity();
-      }
-    }
-    if(e.keyCode === 69){
-      //e OK
-      // $scope.y += weight;
-    }
-    if(e.keyCode === 81){
-      // $scope.y -= weight;
-    }
-
-    if(e.keyCode === 37){
-      // $scope.y -= weight;
-      $scope.leftPosition();
-    }
-    if(e.keyCode === 38){
-      // $scope.y -= weight;
-      $scope.upPosition();
-
-    }
-    if(e.keyCode === 39){
-      // $scope.y -= weight;
-      $scope.rightPosition();
-
-    }
-    if(e.keyCode === 40){
-      // $scope.y -= weight;
-      $scope.downPosition();
-
-    }
-
-
-    // var g = latLonToXYZ($scope.lat, $scope.lon, 10.0)
-    
-    $scope.gravity.set($scope.x, $scope.y, $scope.z);
-    
-    gravityArrow.rotation.set($scope.x/360+180, $scope.y/360+180, $scope.z/360+90)
-    sphere.__dirtyPosition = true;
-    console.log($scope.gravity);
-
-    // var r = latLonToXYZ($scope.lat, $scope.lon, 10);
-    // gravityArrow.lookAt(r)
-    // var keyCode = e.keyCode;
-  }
 
   var latLonToXYZ = function(lat, lon, max) {
     var r =  Math.PI / 180.0
@@ -331,62 +248,25 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   }
 
   var worldRenderLoop = function () {
-    // var seedX = Math.random();
-    // var seedY = Math.random();
-    // for (var i = 0; i <  $scope.flies.length; i++){
-    //   var light =  $scope.flies[i].spot;
-    //   var mesh =  $scope.flies[i].mesh;
-    //   var max = 10;
-    //   light.position.x = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.x)) - (max/2);
-    //   light.position.y = max + (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.y)) - (max/2);
-    //   light.position.z = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.z)) - (max/2);
-    //   mesh.position.x = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.x)) - (max/2);
-    //   mesh.position.y = max + (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.y)) - (max/2);
-    //   mesh.position.z = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.z)) - (max/2);
-    // }
+
+    var seedX = Math.random();
+    var seedY = Math.random();
+    for (var i = 0; i <  $scope.flies.length; i++){
+      var light =  $scope.flies[i].spot;
+      var mesh =  $scope.flies[i].mesh;
+      var max = 60;
+      light.position.x = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.x)) - (max/2);
+      light.position.y = max + (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.y)) - (max/2);
+      light.position.z = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.z)) - (max/2);
+      mesh.position.x = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.x)) - (max/2);
+      mesh.position.y = max + (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.y)) - (max/2);
+      mesh.position.z = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.z)) - (max/2);
+    }
   }
 
-  $scope.up = function(){
-    $scope.camera.rotation.x += 0.05;
-  };
-  $scope.down = function(){
-    $scope.camera.rotation.x -= 0.05;
-  };
-  $scope.left = function(){
-    $scope.camera.rotation.y += 0.1;
-  };
-  $scope.right = function(){
-    $scope.camera.rotation.y -= 0.1 ;
-  };
-
-  $scope.upGravity = function(){
-    $scope.y += 0.05;
-  };
-  $scope.downGravity = function(){
-    $scope.y -= 0.05;
-  };
-  $scope.rightGravity = function(){
-    $scope.x += 0.1;
-  };
-  $scope.leftGravity = function(){
-    $scope.x -= 0.1;
-  };
-
-  $scope.upPosition = function(){
-    $scope.camera.position.y  += 0.1;
-  };
-  $scope.downPosition = function(){
-    $scope.camera.position.y  -= 0.1 ;
-  };
-  $scope.leftPosition = function(){
-    $scope.camera.position.x  -= 0.1;
-  };
-  $scope.rightPosition = function(){
-    $scope.camera.position.x  += 0.1;
-  };
+ 
 
   $scope.$on('trackGenerated',function(event, track){
-    // track.position.set(10,0,0)
     $scope.scene.push(track);
   });
 
