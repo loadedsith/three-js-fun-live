@@ -6,7 +6,6 @@
     "angular-ui-router": "~0.2.13",
     "foundation": "~5.5.1",
     "angular": "~1.3.4",
-    "three.js": "0.70.0",
     "noisejs": "#a197948a68"
   },
   "devDependencies": {
