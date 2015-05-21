@@ -10,7 +10,7 @@ The backend package has been depreciated in favor of [MozVR](mozvr.com) support.
 
 It has been revealed that the mystery project includes rift support via -node-ovrsdk- MozVR.
 
-It has been pomised that the project will stay abstract.
+It has been pomised that the project will stay abstract: No representational textrues, objects, models, or skybox.
 
 That is all that is known about the project at the time.
 
