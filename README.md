@@ -5,6 +5,7 @@ Created on LiveCoding.tv, for the masses.
 https://www.livecoding.tv/grahampheath/
 
 -This is the front end package. The backend is located here https://github.com/loadedsith/mysteryProjectServer-
+
 The backend package has been depreciated in favor of MozVR support.
 
 It has been revealed that the mystery project includes rift support via -node-ovrsdk- MozVR.
