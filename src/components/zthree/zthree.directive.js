@@ -11,9 +11,19 @@ angular.module('mysteryProject')
 	  		gravity:'='
 	  	},
 	    template: '<canvas></canvas>',
-	    link: function (scope, element, attrs) {
+	    link: function (scope, element) {
    	    Physijs.scripts.worker = '/vendor/physijs_worker.js';
+   	    Physijs.scripts.ammo = '/vendor/ammo.js';
 				var scene = new Physijs.Scene({ fixedTimeStep: 1 / 120 });
+
+				scene.addEventListener(
+					'update',
+					function() {
+						scene.simulate( undefined, 1 );
+						//physics_stats.update();
+					}
+				);
+
 				var camera = scope.camera;
 		    var renderer = new THREE.WebGLRenderer({
 		    	canvas:element[0].childNodes[0],
@@ -31,7 +41,8 @@ angular.module('mysteryProject')
 				
 				renderer.autoClear = false;
 				renderer.setClearColor(0x404040);
-
+				renderer.shadowMapEnabled = true;
+				renderer.shadowMapSoft = true;
 				scene.fog = new THREE.Fog(0xcacfde, 0, 10000);
 
     		var controls = new THREE.VRControls( camera );
@@ -46,36 +57,47 @@ angular.module('mysteryProject')
     		 scene.add(track);
   			});
 
-				var state;
 				var vrHMD;
 				var vrHMDSensor;
-
-				navigator.getVRDevices().then(function(vrdevs){
-					   for (var i = 0; i < vrdevs.length; ++i) {
+				if(navigator.getVRDevices!==undefined){
+					navigator.getVRDevices().then(function(vrdevs){
+					  for (var i = 0; i < vrdevs.length; ++i) {
        				 if (vrdevs[i] instanceof HMDVRDevice) {
         		    vrHMD = vrdevs[i];
         		    break;
      			    }	
  				    }
-				    for (var i = 0; i < vrdevs.length; ++i) {
-				        if (vrdevs[i] instanceof PositionSensorVRDevice &&
-				            vrdevs[i].hardwareUnitId == vrHMD.hardwareUnitId) {
-				            vrHMDSensor = vrdevs[i];
+				    for (var ii = 0; ii < vrdevs.length; ++ii) {
+				        if (vrdevs[ii] instanceof PositionSensorVRDevice &&
+				            vrdevs[ii].hardwareUnitId === vrHMD.hardwareUnitId) {
+				            vrHMDSensor = vrdevs[ii];
 				            break;
 				        }
 				    }
-				});
+					});
+				}
+				
 
-
+			scene.setGravity(new THREE.Vector3(0,-30,0));
 		    function render() {
-		    	if(vrHMDSensor!==undefined){
+		    	if (vrHMDSensor !== undefined) {
 		    		var orientation = vrHMDSensor.getState().orientation;
-		    		gravity.set(
-		    			orientation.x,
-		    			orientation.y,
-		    			orientation.z,
-		    			orientation.w
-	    			);
+			    	if (orientation !== undefined && orientation !== null) {
+			    		gravity.set(
+			    			orientation.x,
+			    			orientation.y,
+			    			orientation.z,
+			    			orientation.w
+		    			);
+		    			scope.gravity = new THREE.Euler().setFromQuaternion(gravity, 'XYZ');
+		     			var max = 15;
+		      		var offset = 0.0 * max;
+							scene.setGravity(new THREE.Vector3(
+								gravity.z * max - offset,//left and right
+							  -30,
+					      -1 * (gravity.x * max - offset)//Fore and back
+							));
+			    	}
 		    	}
 		    	 if (scope.scene.renderLoop !== undefined) {
 		      	if (typeof scope.scene.renderLoop === 'function') {
@@ -91,18 +113,6 @@ angular.module('mysteryProject')
 					*/
 		    	requestAnimationFrame( render );
 
-		      scene.simulate(); // run physics
-		      scope.gravity = new THREE.Euler().setFromQuaternion(gravity, 'XYZ');
-		      var max = 15;
-		      var offset = 0.0 * max;
-					console.log(gravity.x * max - offset)
-					scene.setGravity(new THREE.Vector3(
-							// gravity.x * max - offset,
-							gravity.z * max - offset,//left and right
-							-30,
-							-1 * (gravity.x * max - offset)
-						)
-					);
 
 
 					if (manager.isVRMode()) {
@@ -111,6 +121,8 @@ angular.module('mysteryProject')
 						renderer.render(scene, camera);
 					}
 		     
+		      scene.simulate(); // run physics
+		      
 
 		    }
 		    render();
@@ -129,12 +141,12 @@ angular.module('mysteryProject')
 				function onkey(event) {
 			    event.preventDefault();
 
-			    if (event.keyCode == 90) { // z
+			    if (event.keyCode === 90) { // z
 			    	controls.zeroSensor();
 			    }
-			  };
+			  }
 
-			  window.addEventListener("keydown", onkey, true);
+			  window.addEventListener('keydown', onkey, true);
 
 
 

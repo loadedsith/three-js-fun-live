@@ -1,6 +1,7 @@
 {
   "globalstrict": true,
   "bitwise": true,
+  "browser":true,
   "camelcase": true,
   "curly": true,
   "eqeqeq": true,
@@ -30,6 +31,18 @@
     "beforeEach": false,
     "after": false,
     "afterEach": false,
-    "expect": false
+    "expect": false,
+    // THREE
+    "THREE": false,
+    // Noise
+    "Noise":false,
+    "Physijs":false,
+    //VR
+    "WebVRManager":false,
+    "HMDVRDevice":false,
+    "PositionSensorVRDevice":false,
+    //browser
+    "alert":false,
+    "console":false
   }
 }

@@ -51,8 +51,8 @@ angular.module('mysteryProject')
 				var mesh = new THREE.Mesh( geometry, material );
 				scope.$broadcast('trackGenerated',mesh);
 
-			}
+			};
 		}
-	}
+	};
 
 });
