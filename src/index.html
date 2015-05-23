@@ -21,6 +21,37 @@
     <!-- endbuild -->
   </head>
   <body>
+    <script id="vertexShader" type="x-shader/x-vertex">
+
+            varying vec2 vUv;
+
+            void main()
+            {
+                vUv = uv;
+                vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+                gl_Position = projectionMatrix * mvPosition;
+            }
+
+        </script>
+    <script id="fragment_shader4" type="x-shader/x-fragment">
+
+            uniform float time;
+            uniform vec2 resolution;
+
+            varying vec2 vUv;
+
+            void main( void ) {
+
+                vec2 position = -1.0 + 2.0 * vUv;
+
+                float red = abs( sin( position.x * position.y + time / 5.0 ) );
+                float green = abs( sin( position.x * position.y + time / 4.0 ) );
+                float blue = abs( sin( position.x * position.y + time / 3.0 ) );
+                gl_FragColor = vec4( red, green, blue, 1.0 );
+
+            }
+
+        </script>   
     <!--[if lt IE 10]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->

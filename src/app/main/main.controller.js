@@ -14,8 +14,10 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   $scope.scene.push( light );
 
   var red = new THREE.MeshPhongMaterial( { color: 0xff0000 });
+  var shininess = 50, specular = 0x333333, bumpScale = 1, shading = THREE.SmoothShading;
+
   var green = new THREE.MeshPhongMaterial( { color: 0x445511 });
-  var gold = new THREE.MeshPhongMaterial( {metal:true, color: 0xffd700, specular: 0xffd700, shininess: 100 } );
+  var gold = new THREE.MeshPhongMaterial( {metal:true, color: 0xffd700,specular: specular, shininess: shininess, shading: shading } );
   
 
   var buildWall = function(config, scene){
@@ -148,31 +150,41 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   function keyDownTextField(e) {
     if(e.keyCode === 87){
       //w
-      sphere.applyCentralImpulse(new THREE.Vector3(0, 0, -200));
+      sphere.applyCentralImpulse(new THREE.Vector3(0, 0, -500));
     }
     if(e.keyCode === 83){
       //s
-      sphere.applyCentralImpulse(new THREE.Vector3(0, 0, 200));
+      sphere.applyCentralImpulse(new THREE.Vector3(0, 0, 500));
     }
     if(e.keyCode === 65){
       //a
-      sphere.applyCentralImpulse(new THREE.Vector3(-200, 0, 0));
+      sphere.applyCentralImpulse(new THREE.Vector3(-500, 0, 0));
     }
 
     if(e.keyCode === 68){
       //d
-      sphere.applyCentralImpulse(new THREE.Vector3(200, 0, 0));
+      sphere.applyCentralImpulse(new THREE.Vector3(500, 0, 0));
 
     }
   }
   document.addEventListener('keydown', keyDownTextField, false);
+var uniforms1 = {
+          time: { type: "f", value: 1.0 },
+          resolution: { type: "v2", value: new THREE.Vector2() }
+        };
+  var material = new THREE.ShaderMaterial( {
 
-  
+            uniforms: uniforms1,
+            vertexShader: document.getElementById( 'vertexShader' ).textContent,
+            fragmentShader: document.getElementById('fragment_shader4').textContent
+
+            } );
+
   $scope.createSphere = function(){
     //sphere.add($scope.camera);
     var sphere = new Physijs.SphereMesh(
       new THREE.SphereGeometry(5,16, 16),
-      green
+      material
     );
 
     sphere.position.z = -14;
@@ -305,8 +317,19 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   $scope.y = -30;
   $scope.z = 0;
 
+      var clock = new THREE.Clock();
 
   var worldRenderLoop = function () {
+
+
+        var delta = clock.getDelta();
+
+        uniforms1.time.value += delta * 5;
+       // uniforms2.time.value = clock.elapsedTime;
+
+
+
+
     var fliesOffset = new THREE.Vector3(0,500,50);
 
     sphere.__dirtyPosition = true;
