@@ -43,7 +43,6 @@ angular.module('mysteryProject')
 				renderer.setClearColor(0x404040);
 				renderer.shadowMapEnabled = true;
 				renderer.shadowMapSoft = true;
-				scene.fog = new THREE.Fog(0xcacfde, 0, 10000);
 
     		var controls = new THREE.VRControls( camera );
 

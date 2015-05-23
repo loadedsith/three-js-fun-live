@@ -2,7 +2,7 @@
 angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
   $scope.scene = [];
 
-  $scope.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.001, 100 );
+  $scope.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 100 );
   $scope.camera.position.set(0,10,50);
 
   var noise = new Noise(Math.random());
@@ -275,25 +275,27 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
     }  //111
   ];
   
-  $scope.makeFlies = function() {
+  $scope.makeFlies = function(lights) {
     var flies = [];
+
     for (var i = lights.length - 1; i >= 0; i--) {
       var spot = new THREE.PointLight( lights[i].color );
       spot.position.z = (Math.random() * 5) - 2.5;
       spot.position.x = (Math.random() * 5) - 2.5;
       spot.position.y = (Math.random() * 5) - 2.5;
+
       var mesh = new THREE.Mesh( geometry, red );
       mesh.scale.x = 0.2;
       mesh.scale.y = 0.2;
       mesh.scale.z = 0.2;
-      flies.push({spot:spot, mesh: mesh});
+      flies.push({spot:spot, mesh: mesh, color:lights[i].color, seeds:lights[i].seeds});
       $scope.scene.push( spot );
       $scope.scene.push( mesh );
     }
     return flies;
   };
 
-  $scope.flies = $scope.makeFlies();
+  $scope.flies = $scope.makeFlies(lights);
 
   $scope.camera.rotation.x = -0.4;
   $scope.lat = -180;
@@ -305,18 +307,28 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
 
 
   var worldRenderLoop = function () {
+    var fliesOffset = new THREE.Vector3(0,500,50);
 
     sphere.__dirtyPosition = true;
     for (var i = 0; i <  $scope.flies.length; i++){
       var light =  $scope.flies[i].spot;
       var mesh =  $scope.flies[i].mesh;
-      var max = 60;
-      light.position.x = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.x)) - (max/2);
-      light.position.y = max + (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.y)) - (max/2);
-      light.position.z = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.z)) - (max/2);
-      mesh.position.x = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.x)) - (max/2);
-      mesh.position.y = max + (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.y)) - (max/2);
-      mesh.position.z = (max * noise.perlin2(Date.now() / 1000, lights[i].seeds.z)) - (max/2);
+      var max = 1000;
+      var now = Date.now();
+      var seeds = $scope.flies[i].seeds;
+
+      var x = (max * noise.perlin2(now / 1000, seeds.x)) - (max/2);
+      light.position.x = x;
+      mesh.position.x = x;
+
+      var y = max + (max * noise.perlin2(now / 1000, seeds.y)) - (max/2);
+      light.position.y = y;
+      mesh.position.y = y;
+      
+      var z = (max * noise.perlin2(now / 1000, seeds.z)) - (max/2);
+      light.position.z = z;
+      mesh.position.z = z;
+
     }
   };
 
