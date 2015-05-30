@@ -7,57 +7,26 @@
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <!-- build:css({.tmp/serve,src}) styles/vendor.css -->
+    <!-- build:css({.tmp/serve, src}) styles/vendor.css -->
     <link rel="stylesheet" href="app/vendor.css">
     <!-- bower:css -->
     <!-- run `gulp inject` to automatically populate bower styles dependencies -->
     <!-- endbower -->
     <!-- endbuild -->
 
-    <!-- build:css({.tmp/serve,src}) styles/app.css -->
+    <!-- build:css({.tmp/serve, src}) styles/app.css -->
     <!-- inject:css -->
     <!-- css files will be automatically insert here -->
     <!-- endinject -->
     <!-- endbuild -->
   </head>
   <body>
-    <script id="vertexShader" type="x-shader/x-vertex">
-
-            varying vec2 vUv;
-
-            void main()
-            {
-                vUv = uv;
-                vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-                gl_Position = projectionMatrix * mvPosition;
-            }
-
-        </script>
-    <script id="fragment_shader4" type="x-shader/x-fragment">
-
-            uniform float time;
-            uniform vec2 resolution;
-
-            varying vec2 vUv;
-
-            void main( void ) {
-
-                vec2 position = -1.0 + 2.0 * vUv;
-
-                float red = abs( sin( position.x * position.y + time / 5.0 ) );
-                float green = abs( sin( position.x * position.y + time / 4.0 ) );
-                float blue = abs( sin( position.x * position.y + time / 3.0 ) );
-                gl_FragColor = vec4( red, green, blue, 1.0 );
-
-            }
-
-        </script>   
+    
     <!--[if lt IE 10]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
     <div ui-view></div>
-
 
     <!-- build:js(src) scripts/vendor.js -->
     <script src="./vendor/three.min.js"></script>
@@ -69,12 +38,11 @@
     <!-- endbower -->
     <!-- endbuild -->
 
-  
-<script src="app/index.js"></script>
-<script src="components/zthree/zthree.directive.js"></script>
-<script src="components/navbar/navbar.controller.js"></script>
-<script src="components/trackGenerator/trackGenerator.directive.js"></script>
-<script src="app/main/main.controller.js"></script>
+    <script src="app/index.js"></script>
+    <script src="components/zthree/zthree.directive.js"></script>
+    <script src="components/navbar/navbar.controller.js"></script>
+    <script src="components/trackGenerator/trackGenerator.directive.js"></script>
+    <script src="app/main/main.controller.js"></script>
     <!-- inject:partials -->
     <!-- angular templates will be automatically converted in js and inserted here -->
     <!-- endinject -->

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('mysteryProject', ['ngSanitize', 'ui.router'])
-  .config(function ($stateProvider, $urlRouterProvider) {
+  .config(function($stateProvider, $urlRouterProvider) {
     $stateProvider
       .state('home', {
         url: '/',

@@ -1,28 +1,35 @@
 'use strict';
-angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
+angular.module('mysteryProject').controller('MainCtrl', function($scope) {
   $scope.scene = [];
 
-  $scope.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 100 );
-  $scope.camera.position.set(0,10,50);
+  $scope.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 100);
+  $scope.camera.position.set(0, 10, 50);
 
   var noise = new Noise(Math.random());
 
-  var geometry = new THREE.CubeGeometry( 3, 3, 3 );
+  var geometry = new THREE.CubeGeometry(3, 3, 3);
   
-  var light = new THREE.DirectionalLight( 0xffffff );
-  light.position.set( 0, 0, 1 );
-  $scope.scene.push( light );
+  var light = new THREE.DirectionalLight(0xffffff);
+  light.position.set(0, 0, 1);
+  $scope.scene.push(light);
 
-  var red = new THREE.MeshPhongMaterial( { color: 0xff0000 });
-  var shininess = 50, specular = 0x333333, bumpScale = 1, shading = THREE.SmoothShading;
+  var red = new THREE.MeshPhongMaterial({color: 0xff0000});
+  var shininess = 50;
+  var specular = 0x333333;
+  var shading = THREE.SmoothShading;
 
-  var green = new THREE.MeshPhongMaterial( { color: 0x445511 });
-  var gold = new THREE.MeshPhongMaterial( {metal:true, color: 0xffd700,specular: specular, shininess: shininess, shading: shading } );
+  var green = new THREE.MeshPhongMaterial({color: 0x445511});
+  var gold = new THREE.MeshPhongMaterial({
+    metal: true,
+    color: 0xffd700,
+    specular: specular,
+    shininess: shininess,
+    shading: shading
+  });
   
-
-  var buildWall = function(config, scene){
-    var geometry = config.geometry||new THREE.CubeGeometry( 3, 3, 3 );
-    var color = config.color||new THREE.MeshPhongMaterial( { color: 0xff0000 } );
+  var buildWall = function(config, scene) {
+    var geometry = config.geometry || new THREE.CubeGeometry(3, 3, 3);
+    var color = config.color || new THREE.MeshPhongMaterial({color: 0xff0000});
     var wall = new Physijs.BoxMesh(geometry, color , 0);
 
     wall.position.y = config.position.y || 0;
@@ -38,10 +45,10 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
     wall.scale.y = config.scale.y || 1;
     wall.scale.z = config.scale.z || 1;
 
-    scene.push( wall );
+    scene.push(wall);
   };
 
-  $scope.makeWalls = function(){
+  $scope.makeWalls = function() {
       
     var groundLevel = -20;
     var wallLength = 27;
@@ -51,7 +58,7 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
       geometery: geometry,
       position:{
         x: 0,
-        y: groundLevel-18,
+        y: groundLevel - 18,
         z: 0
       },
       scale:{
@@ -89,7 +96,6 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
       }
     };
 
-
     var right = {
       position: {
         x: 40,
@@ -117,73 +123,63 @@ angular.module('mysteryProject')  .controller('MainCtrl', function ($scope) {
       }
     };
 
-    var divider = {
-      position: {
-        x: 10,
-        y: groundLevel,
-        z: 0
-      },
-      scale: {
-        x: wallLength/2,
-        y: 10,
-        z: 1
-      }
-    };
-
     var walls = [
       forward,
       backward,
       left,
-      // divider,
       right,
       ground
     ];
 
     for (var i = walls.length - 1; i >= 0; i--) {
-        buildWall(walls[i], $scope.scene);
+      buildWall(walls[i], $scope.scene);
     }
   };
   $scope.makeWalls();
 
-
   //KEYS
-  function keyDownTextField(e) {
-    if(e.keyCode === 87){
+  function keyDownEvent(e) {
+    if (e.keyCode === 87) {
       //w
       sphere.applyCentralImpulse(new THREE.Vector3(0, 0, -500));
     }
-    if(e.keyCode === 83){
+    if (e.keyCode === 83) {
       //s
       sphere.applyCentralImpulse(new THREE.Vector3(0, 0, 500));
     }
-    if(e.keyCode === 65){
+    if (e.keyCode === 65) {
       //a
       sphere.applyCentralImpulse(new THREE.Vector3(-500, 0, 0));
     }
-
-    if(e.keyCode === 68){
+    if (e.keyCode === 68) {
       //d
       sphere.applyCentralImpulse(new THREE.Vector3(500, 0, 0));
-
     }
   }
-  document.addEventListener('keydown', keyDownTextField, false);
-var uniforms1 = {
-          time: { type: "f", value: 1.0 },
-          resolution: { type: "v2", value: new THREE.Vector2() }
-        };
-  var material = new THREE.ShaderMaterial( {
 
-            uniforms: uniforms1,
-            vertexShader: document.getElementById( 'vertexShader' ).textContent,
-            fragmentShader: document.getElementById('fragment_shader4').textContent
+  document.addEventListener('keydown', keyDownEvent, false);
+  
+  var uniforms1 = {
+    time: {
+      type: 'f',
+      value: 1.0
+    },
+    resolution: {
+      type: 'v2',
+      value: new THREE.Vector2()
+    }
+  };
 
-            } );
+  var material = new THREE.ShaderMaterial({
+    uniforms: uniforms1,
+    vertexShader: document.getElementById('vertexShader').textContent,
+    fragmentShader: document.getElementById('fragment_shader4').textContent
+  }); 
 
-  $scope.createSphere = function(){
+  $scope.createSphere = function() {
     //sphere.add($scope.camera);
     var sphere = new Physijs.SphereMesh(
-      new THREE.SphereGeometry(5,16, 16),
+      new THREE.SphereGeometry(5, 16, 16),
       material
     );
 
@@ -194,11 +190,12 @@ var uniforms1 = {
     sphere.__dirtyPosition = true;
     return sphere; 
   };
+
   var sphere = $scope.createSphere();
-  $scope.scene.push( sphere );
+  $scope.scene.push(sphere);
 
   var goal = new Physijs.BoxMesh(
-    new THREE.CubeGeometry(5,5,5),
+    new THREE.CubeGeometry(5, 5, 5),
     red
   );
 
@@ -211,98 +208,89 @@ var uniforms1 = {
     if (collidedWith.uuid === sphere.uuid) {
       alert('you win.');
     }
-    console.log('collidedWith, linearVelocity, angularVelocity',collidedWith, linearVelocity, angularVelocity);
   };
 
-  var goalReady = function(){
-    console.log('Goal Ready');
-  };
-  
-
-
-
-  goal.addEventListener( 'collision', goalCollison );
-  goal.addEventListener( 'ready', goalReady );
+  goal.addEventListener('collision', goalCollison);
 
   goal.collisions = 1;
 
-  $scope.scene.push( goal );
+  $scope.scene.push(goal);
 
   var lights = [
     {
-      color:0x4040ff,
+      color: 0x4040ff,
       seeds: {
-       x:Math.random(),
-       y:Math.random(),
-       z:Math.random()
+        x: Math.random(),
+        y: Math.random(),
+        z: Math.random()
       }
     }, //001
     {
-      color:0x40ff40,
+      color: 0x40ff40,
       seeds: {
-       x:Math.random(),
-       y:Math.random(),
-       z:Math.random()
+        x: Math.random(),
+        y: Math.random(),
+        z: Math.random()
       }
     }, //010
     {
-      color:0x40ffff,
+      color: 0x40ffff,
       seeds: {
-       x:Math.random(),
-       y:Math.random(),
-       z:Math.random()
-      
-}    }, //011
+        x: Math.random(),
+        y: Math.random(),
+        z: Math.random()
+      }
+    }, //011
     {
-      color:0xff4040,
+      color: 0xff4040,
       seeds: {
-       x:Math.random(),
-       y:Math.random(),
-       z:Math.random()
+        x: Math.random(),
+        y: Math.random(),
+        z: Math.random()
       }
     }, //100
     {
-      color:0xff40ff,
+      color: 0xff40ff,
       seeds: {
-       x:Math.random(),
-       y:Math.random(),
-       z:Math.random()
+        x: Math.random(),
+        y: Math.random(),
+        z: Math.random()
       }
     }, //101
     {
-      color:0xffff00,
+      color: 0xffff00,
       seeds: {
-       x:Math.random(),
-       y:Math.random(),
-       z:Math.random()
+        x: Math.random(),
+        y: Math.random(),
+        z: Math.random()
       }
     }, //110
     {
-      color:0xffffff,
+      color: 0xffffff,
       seeds: {
-       x:Math.random(),
-       y:Math.random(),
-       z:Math.random()
+        x: Math.random(),
+        y: Math.random(),
+        z: Math.random()
       }
     }  //111
   ];
-  
+
   $scope.makeFlies = function(lights) {
     var flies = [];
 
     for (var i = lights.length - 1; i >= 0; i--) {
-      var spot = new THREE.PointLight( lights[i].color );
+      var spot = new THREE.PointLight(lights[i].color);
       spot.position.z = (Math.random() * 5) - 2.5;
       spot.position.x = (Math.random() * 5) - 2.5;
       spot.position.y = (Math.random() * 5) - 2.5;
 
-      var mesh = new THREE.Mesh( geometry, red );
+      var mesh = new THREE.Mesh(geometry, red);
       mesh.scale.x = 0.2;
       mesh.scale.y = 0.2;
       mesh.scale.z = 0.2;
       flies.push({spot:spot, mesh: mesh, color:lights[i].color, seeds:lights[i].seeds});
-      $scope.scene.push( spot );
-      $scope.scene.push( mesh );
+      $scope.scene.push(spot);
+      $scope.scene.push(mesh);
     }
     return flies;
   };
@@ -317,52 +305,41 @@ var uniforms1 = {
   $scope.y = -30;
   $scope.z = 0;
 
-      var clock = new THREE.Clock();
+  var clock = new THREE.Clock();
 
-  var worldRenderLoop = function () {
+  var worldRenderLoop = function() {
 
+    var delta = clock.getDelta();
 
-        var delta = clock.getDelta();
-
-        uniforms1.time.value += delta * 5;
-       // uniforms2.time.value = clock.elapsedTime;
-
-
-
-
-    var fliesOffset = new THREE.Vector3(0,500,50);
+    uniforms1.time.value += delta * 5;
 
     sphere.__dirtyPosition = true;
-    for (var i = 0; i <  $scope.flies.length; i++){
-      var light =  $scope.flies[i].spot;
-      var mesh =  $scope.flies[i].mesh;
+
+    for (var i = 0; i <  $scope.flies.length; i++) {
+      var light = $scope.flies[i].spot;
+      var mesh = $scope.flies[i].mesh;
       var max = 1000;
       var now = Date.now();
       var seeds = $scope.flies[i].seeds;
 
-      var x = (max * noise.perlin2(now / 1000, seeds.x)) - (max/2);
+      var x = (max * noise.perlin2(now / 1000, seeds.x)) - (max / 2);
       light.position.x = x;
       mesh.position.x = x;
 
-      var y = max + (max * noise.perlin2(now / 1000, seeds.y)) - (max/2);
+      var y = max + (max * noise.perlin2(now / 1000, seeds.y)) - (max / 2);
       light.position.y = y;
       mesh.position.y = y;
       
-      var z = (max * noise.perlin2(now / 1000, seeds.z)) - (max/2);
+      var z = (max * noise.perlin2(now / 1000, seeds.z)) - (max / 2);
       light.position.z = z;
       mesh.position.z = z;
 
     }
   };
 
- 
-
-  $scope.$on('trackGenerated',function(event, track){
-    // track.position.set(10,0,0)
+  $scope.$on('trackGenerated', function(event, track) {
     $scope.scene.push(track);
   });
 
   $scope.scene.renderLoop = worldRenderLoop;
-
-
 });

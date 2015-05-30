@@ -10,6 +10,11 @@ module.exports = function(options) {
     return gulp.src(options.src + '/{app,components}/**/*.js')
       .pipe($.jshint())
       .pipe($.jshint.reporter('jshint-stylish'))
+      .pipe($.jscs({
+      	"preset": "google"
+      }).on('error', function(a,b,c){
+      	console.log(a.message);
+      }))
       .pipe(browserSync.reload({ stream: true }))
       .pipe($.size());
   });

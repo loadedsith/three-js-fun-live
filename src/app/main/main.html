@@ -1,18 +1,57 @@
-<zthree id="background3d" scene="scene" pose="pose" gravity="gravity" camera="camera"></zthree>
+<zthree 
+	id="background3d" 
+	scene="scene" 
+	pose="pose" 
+	gravity="gravity" 
+	camera="camera"
+	>
+</zthree>
 <!-- <div track-generator></div> -->
-<div id="toggleContent" class='debug' ng-class="{open:openContentDrawer||false}" ng-click="openContentDrawer = !openContentDrawer">
+<div
+	id="toggleContent"
+	class='debug'
+	ng-class="{open:openContentDrawer || false}"
+	ng-click="openContentDrawer = !openContentDrawer"
+	>
   <div class="hide">Hide</div>
   <div class="show">Show</div>
 </div>
-<div id="content" class="container" ng-class="{open:openContentDrawer}" ng-keydown="keyDown">
+
+<div
+	id="content"
+	class="container"
+	ng-class="{open:openContentDrawer}"
+	ng-keydown="keyDown"
+	>
   <div class="row">
     <div class="large-12 large-text-center columns" >
       
     </div>
   </div>
- 
-<!-- 
-  X<input type="text" value="{{x}}">
-	Y<input type="text" value="{{y}}">
-	Z<input type="text" value="{{z}}"> -->
+  <script id="fragment_shader4" type="x-shader/x-fragment">
+
+		uniform float time;
+		uniform vec2 resolution;
+
+		varying vec2 vUv;
+
+		void main(void){
+
+		  vec2 position = -1.0 + 2.0 * vUv;
+
+		  float red = abs(sin(position.x * position.y + time / 5.0 ));
+		  float green = abs(sin(position.x * position.y + time / 4.0 ));
+		  float blue = abs(sin(position.x * position.y + time / 3.0 ));
+		  gl_FragColor = vec4(red, green, blue, 1.0);
+
+		}
+  </script>	
+  <script id="vertexShader" type="x-shader/x-vertex">
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      gl_Position = projectionMatrix * mvPosition;
+    }
+  </script>
 </div>

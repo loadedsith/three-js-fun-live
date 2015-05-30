@@ -1,166 +1,165 @@
 'use strict';
 
 angular.module('mysteryProject')
-	.directive('zthree', function() {
-	  return {
-	  	restrict: 'E',
-	  	scope:{
-	  		scene:'=',
-	  		pose:'=',	
-	  		camera:'=',	
-	  		gravity:'='
-	  	},
-	    template: '<canvas></canvas>',
-	    link: function (scope, element) {
-   	    Physijs.scripts.worker = '/vendor/physijs_worker.js';
-   	    Physijs.scripts.ammo = '/vendor/ammo.js';
-				var scene = new Physijs.Scene({ fixedTimeStep: 1 / 120 });
+  .directive('zthree', function() {
+    return {
+      restrict: 'E',
 
-				scene.addEventListener(
-					'update',
-					function() {
-						scene.simulate( undefined, 1 );
-						//physics_stats.update();
-					}
-				);
+      scope:{
+        scene:'=',
+        pose:'=', 
+        camera:'=', 
+        gravity:'='
+      },
 
-				var camera = scope.camera;
-		    var renderer = new THREE.WebGLRenderer({
-		    	canvas:element[0].childNodes[0],
-	    		antialias: true
-		    });
+      template: '<canvas></canvas>',
 
-				var gravity = new THREE.Quaternion();
-		    renderer.setSize( window.innerWidth - 0, window.innerHeight - 0);
-				
-				/*
-				Apply VR stereo rendering to renderer
-				*/
-				var effect = new THREE.VREffect( renderer );
-				effect.setSize( window.innerWidth, window.innerHeight );
-				
-				renderer.autoClear = false;
-				renderer.setClearColor(0x404040);
-				renderer.shadowMapEnabled = true;
-				renderer.shadowMapSoft = true;
+      link: function(scope, element) {
+        Physijs.scripts.worker = '/vendor/physijs_worker.js';
+        Physijs.scripts.ammo = '/vendor/ammo.js';
 
-    		var controls = new THREE.VRControls( camera );
+        var scene = new Physijs.Scene({fixedTimeStep: 1 / 120});
 
-				var manager = new WebVRManager(renderer, effect);
-			
-		    for(var i = 0; i < scope.scene.length; i++){
-		    	scene.add(scope.scene[i]);
-		    }
+        scene.addEventListener(
+          'update',
+          function() {
+            scene.simulate(undefined, 1);
+          }
+        );
 
-				scope.$on('trackGenerated',function(event, track){
-    		 scene.add(track);
-  			});
+        var camera = scope.camera;
+        var renderer = new THREE.WebGLRenderer({
+          canvas:element[0].childNodes[0],
+          antialias: true
+        });
 
-				var vrHMD;
-				var vrHMDSensor;
-				if(navigator.getVRDevices!==undefined){
-					navigator.getVRDevices().then(function(vrdevs){
-					  for (var i = 0; i < vrdevs.length; ++i) {
-       				 if (vrdevs[i] instanceof HMDVRDevice) {
-        		    vrHMD = vrdevs[i];
-        		    break;
-     			    }	
- 				    }
-				    for (var ii = 0; ii < vrdevs.length; ++ii) {
-				        if (vrdevs[ii] instanceof PositionSensorVRDevice &&
-				            vrdevs[ii].hardwareUnitId === vrHMD.hardwareUnitId) {
-				            vrHMDSensor = vrdevs[ii];
-				            break;
-				        }
-				    }
-					});
-				}
-				
+        var gravity = new THREE.Quaternion();
+        renderer.setSize(window.innerWidth - 0, window.innerHeight - 0);
+        
+        /*
+        Apply VR stereo rendering to renderer
+        */
+        var effect = new THREE.VREffect(renderer);
+        effect.setSize(window.innerWidth, window.innerHeight);
+        
+        renderer.autoClear = false;
+        renderer.setClearColor(0x404040);
+        renderer.shadowMapEnabled = true;
+        renderer.shadowMapSoft = true;
 
-			scene.setGravity(new THREE.Vector3(0,-30,0));
-		    function render() {
-		    	if (vrHMDSensor !== undefined) {
-		    		var orientation = vrHMDSensor.getState().orientation;
-			    	if (orientation !== undefined && orientation !== null) {
-			    		gravity.set(
-			    			orientation.x,
-			    			orientation.y,
-			    			orientation.z,
-			    			orientation.w
-		    			);
-		    			scope.gravity = new THREE.Euler().setFromQuaternion(gravity, 'XYZ');
-		     			var max = 15;
-		      		var offset = 0.0 * max;
-							scene.setGravity(new THREE.Vector3(
-								gravity.z * max - offset,//left and right
-							  -30,
-					      -1 * (gravity.x * max - offset)//Fore and back
-							));
-			    	}
-		    	}
-		    	 if (scope.scene.renderLoop !== undefined) {
-		      	if (typeof scope.scene.renderLoop === 'function') {
-		      		scope.scene.renderLoop();
-		      	}
-		      }
-					/*
-					Update VR headset position and apply to camera.
-					*/
-					controls.update();
-					/*
-					Render the scene through the VREffect.
-					*/
-		    	requestAnimationFrame( render );
+        var controls = new THREE.VRControls(camera);
 
+        var manager = new WebVRManager(renderer, effect);
+      
+        for (var i = 0; i < scope.scene.length; i++) {
+          scene.add(scope.scene[i]);
+        }
 
+        scope.$on('trackGenerated', function(event, track) {
+          scene.add(track);
+        });
 
-					if (manager.isVRMode()) {
-						effect.render(scene, camera);
-					} else {
-						renderer.render(scene, camera);
-					}
-		     
-		      scene.simulate(); // run physics
-		      
+        var vrHMD;
+        var vrHMDSensor;
+        if (navigator.getVRDevices !== undefined) {
+          navigator.getVRDevices().then(function(vrdevs) {
+            for (var i = 0; i < vrdevs.length; ++i) {
+              if (vrdevs[i] instanceof HMDVRDevice) {
+                vrHMD = vrdevs[i];
+                break;
+              }
+            }
 
-		    }
-		    render();
+            for (var ii = 0; ii < vrdevs.length; ++ii) {
+              var isPositionSensor = vrdevs[ii] instanceof PositionSensorVRDevice;
+              var isHardwareUnit = vrdevs[ii].hardwareUnitId === vrHMD.hardwareUnitId;
+              if (isPositionSensor && isHardwareUnit) {
+                vrHMDSensor = vrdevs[ii];
+                break;
+              }
+            }
+          });
+        }
 
+        scene.setGravity(new THREE.Vector3(0, -30, 0));
 
-				/*
-				Listen for double click event to enter full-screen VR mode
-				*/
-				document.body.addEventListener( 'dblclick', function() {
-					effect.setFullScreen( true );
-				});
+        function render() {
+          if (vrHMDSensor !== undefined) {
+            var orientation = vrHMDSensor.getState().orientation;
+            if (orientation !== undefined && orientation !== null) {
+              gravity.set(
+                orientation.x,
+                orientation.y,
+                orientation.z,
+                orientation.w
+              );
+              scope.gravity = new THREE.Euler();
+              scope.gravity.setFromQuaternion(gravity, 'XYZ');
+              var max = 15;
+              var offset = 0.0 * max;
+              scene.setGravity(new THREE.Vector3(
+                gravity.z * max - offset, //left and right
+                -30,
+                -1 * (gravity.x * max - offset)//Fore and back
+              ));
+            }
+          }
 
-				/*
-				Listen for keyboard event and zero positional sensor on appropriate keypress.
-				*/
-				function onkey(event) {
-			    event.preventDefault();
+          if (scope.scene.renderLoop !== undefined) {
+            if (typeof scope.scene.renderLoop === 'function') {
+              scope.scene.renderLoop();
+            }
+          }
+          /*
+          Update VR headset position and apply to camera.
+          */
+          controls.update();
+          /*
+          Render the scene through the VREffect.
+          */
+          requestAnimationFrame(render);
 
-			    if (event.keyCode === 90) { // z
-			    	controls.zeroSensor();
-			    }
-			  }
+          if (manager.isVRMode()) {
+            effect.render(scene, camera);
+          } else {
+            renderer.render(scene, camera);
+          }
 
-			  window.addEventListener('keydown', onkey, true);
+          scene.simulate(); // run physics
+        }
 
+        render();
+        /*
+        Listen for double click event to enter full-screen VR mode
+        */
+        document.body.addEventListener('dblclick', function() {
+          effect.setFullScreen(true);
+        });
 
+        /*
+        Listen for keyboard event and zero positional sensor on appropriate keypress.
+        */
+        function onkey(event) {
+          event.preventDefault();
 
-				/*
-				Handle window resizes
-				*/
-				function onWindowResize() {
-					camera.aspect = window.innerWidth / window.innerHeight;
-					camera.updateProjectionMatrix();
+          if (event.keyCode === 90) {// z
+            controls.zeroSensor();
+          }
+        }
 
-					effect.setSize( window.innerWidth, window.innerHeight );
-				}
+        window.addEventListener('keydown', onkey, true);
+        /*
+        Handle window resizes
+        */
+        function onWindowResize() {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
 
-				window.addEventListener( 'resize', onWindowResize, false );
+          effect.setSize(window.innerWidth, window.innerHeight);
+        }
 
-	    }
-	  };
-	});
+        window.addEventListener('resize', onWindowResize, false);
+
+      }
+    };
+  });

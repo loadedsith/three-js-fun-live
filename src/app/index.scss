@@ -35,7 +35,7 @@
   height: 100%;
 }
 #content{
-  transition: 0.3s top cubic-bezier(0.81, 0.03, 0.44, 1),0.3s height cubic-bezier(0.81, 0.03, 0.44, 1);
+  transition: 0.3s top cubic-bezier(0.81, 0.03, 0.44, 1), 0.3s height cubic-bezier(0.81, 0.03, 0.44, 1);
   &.open{
     top:0;
 
@@ -59,7 +59,7 @@
 #toggleContent{
   position: absolute;
   color:#fff;
-  background-color: rgba(0,0,0,0.6);
+  background-color: rgba(0, 0, 0, 0.6);
   @extend .button;
   z-index: 100;
   display: block;
