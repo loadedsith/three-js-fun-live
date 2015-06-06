@@ -4,6 +4,7 @@ var gulp = require('gulp');
 var browserSync = require('browser-sync');
 
 var $ = require('gulp-load-plugins')();
+var scsslint = require('gulp-scss-lint');
 
 module.exports = function(options) {
   gulp.task('styles', function () {
@@ -29,6 +30,13 @@ module.exports = function(options) {
     };
 
     var indexFilter = $.filter('index.scss');
+
+    gulp.src([
+      options.src + '/app/index.scss'
+    ])
+    .pipe(scsslint({
+      'config': '.scss-lint.yml'
+    }))
 
     return gulp.src([
       options.src + '/app/index.scss',
