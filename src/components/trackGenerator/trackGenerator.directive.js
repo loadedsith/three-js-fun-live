@@ -6,7 +6,7 @@ angular.module('mysteryProject')
     templateUrl:'/components/trackGenerator/trackGenerator.html',
     link: function(scope) {
       scope.length = 3;//extruded, so ignore
-      scope.height = 3;//vertical 
+      scope.height = 3;//vertical
       scope.width = 3;//horizontal
       scope.depth = 1;//notch depth
 

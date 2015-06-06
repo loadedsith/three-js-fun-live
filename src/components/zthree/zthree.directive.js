@@ -7,13 +7,29 @@ angular.module('mysteryProject')
 
       scope:{
         scene:'=',
-        pose:'=', 
-        camera:'=', 
+        pose:'=',
+        camera:'=',
         gravity:'='
       },
 
       template: '<canvas></canvas>',
+      getHMDVRDevice:function(vrdevs) {
+        for (var i = 0; i < vrdevs.length; ++i) {
+          if (vrdevs[i] instanceof HMDVRDevice) {
+            return vrdevs[i];
+          }
+        }
+      },
+      getHMDSensor:function(vrdevs, vrHMD) {
+        for (var i = 0; i < vrdevs.length; ++i) {
+          var isPositionSensor = vrdevs[i] instanceof PositionSensorVRDevice;
+          var sameDevice = vrdevs[i].hardwareUnitId === vrHMD.hardwareUnitId;
+          if (isPositionSensor && sameDevice) {
+            return vrdevs[i];
+          }
+        }
 
+      },
       link: function(scope, element) {
         Physijs.scripts.worker = '/vendor/physijs_worker.js';
         Physijs.scripts.ammo = '/vendor/ammo.js';
@@ -35,13 +51,13 @@ angular.module('mysteryProject')
 
         var gravity = new THREE.Quaternion();
         renderer.setSize(window.innerWidth - 0, window.innerHeight - 0);
-        
+
         /*
         Apply VR stereo rendering to renderer
         */
         var effect = new THREE.VREffect(renderer);
         effect.setSize(window.innerWidth, window.innerHeight);
-        
+
         renderer.autoClear = false;
         renderer.setClearColor(0x404040);
         renderer.shadowMapEnabled = true;
@@ -50,7 +66,7 @@ angular.module('mysteryProject')
         var controls = new THREE.VRControls(camera);
 
         var manager = new WebVRManager(renderer, effect);
-      
+
         for (var i = 0; i < scope.scene.length; i++) {
           scene.add(scope.scene[i]);
         }
@@ -63,21 +79,8 @@ angular.module('mysteryProject')
         var vrHMDSensor;
         if (navigator.getVRDevices !== undefined) {
           navigator.getVRDevices().then(function(vrdevs) {
-            for (var i = 0; i < vrdevs.length; ++i) {
-              if (vrdevs[i] instanceof HMDVRDevice) {
-                vrHMD = vrdevs[i];
-                break;
-              }
-            }
-
-            for (var ii = 0; ii < vrdevs.length; ++ii) {
-              var isPositionSensor = vrdevs[ii] instanceof PositionSensorVRDevice;
-              var isHardwareUnit = vrdevs[ii].hardwareUnitId === vrHMD.hardwareUnitId;
-              if (isPositionSensor && isHardwareUnit) {
-                vrHMDSensor = vrdevs[ii];
-                break;
-              }
-            }
+            vrHMD = this.getHMDVRDevice(vrdevs);
+            vrHMDSensor = this.getHMDSensor(vrdevs, vrHMD);
           });
         }
 

@@ -1,14 +1,14 @@
 'use strict';
 angular.module('mysteryProject').controller('MainCtrl', function($scope) {
   $scope.scene = [];
-
-  $scope.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 100);
+  var windowAspectRatio = window.innerWidth / window.innerHeight;
+  $scope.camera = new THREE.PerspectiveCamera(75, windowAspectRatio, 0.01, 100);
   $scope.camera.position.set(0, 10, 50);
 
   var noise = new Noise(Math.random());
 
   var geometry = new THREE.CubeGeometry(3, 3, 3);
-  
+
   var light = new THREE.DirectionalLight(0xffffff);
   light.position.set(0, 0, 1);
   $scope.scene.push(light);
@@ -26,7 +26,7 @@ angular.module('mysteryProject').controller('MainCtrl', function($scope) {
     shininess: shininess,
     shading: shading
   });
-  
+
   var buildWall = function(config, scene) {
     var geometry = config.geometry || new THREE.CubeGeometry(3, 3, 3);
     var color = config.color || new THREE.MeshPhongMaterial({color: 0xff0000});
@@ -49,7 +49,7 @@ angular.module('mysteryProject').controller('MainCtrl', function($scope) {
   };
 
   $scope.makeWalls = function() {
-      
+
     var groundLevel = -20;
     var wallLength = 27;
 
@@ -158,7 +158,7 @@ angular.module('mysteryProject').controller('MainCtrl', function($scope) {
   }
 
   document.addEventListener('keydown', keyDownEvent, false);
-  
+
   var uniforms1 = {
     time: {
       type: 'f',
@@ -174,7 +174,7 @@ angular.module('mysteryProject').controller('MainCtrl', function($scope) {
     uniforms: uniforms1,
     vertexShader: document.getElementById('vertexShader').textContent,
     fragmentShader: document.getElementById('fragment_shader4').textContent
-  }); 
+  });
 
   $scope.createSphere = function() {
     //sphere.add($scope.camera);
@@ -188,7 +188,7 @@ angular.module('mysteryProject').controller('MainCtrl', function($scope) {
     sphere.castShadow = true;
     sphere.collisions = 0;
     sphere.__dirtyPosition = true;
-    return sphere; 
+    return sphere;
   };
 
   var sphere = $scope.createSphere();
@@ -204,7 +204,7 @@ angular.module('mysteryProject').controller('MainCtrl', function($scope) {
   goal.receiveShadow = true;
   goal.castShadow = true;
 
-  var goalCollison = function(collidedWith, linearVelocity, angularVelocity) {
+  var goalCollison = function(collidedWith) {// linearVelocity, angularVelocity
     if (collidedWith.uuid === sphere.uuid) {
       alert('you win.');
     }
@@ -288,7 +288,12 @@ angular.module('mysteryProject').controller('MainCtrl', function($scope) {
       mesh.scale.x = 0.2;
       mesh.scale.y = 0.2;
       mesh.scale.z = 0.2;
-      flies.push({spot:spot, mesh: mesh, color:lights[i].color, seeds:lights[i].seeds});
+      flies.push({
+        spot:spot,
+        mesh: mesh,
+        color:lights[i].color,
+        seeds:lights[i].seeds
+      });
       $scope.scene.push(spot);
       $scope.scene.push(mesh);
     }
@@ -300,7 +305,7 @@ angular.module('mysteryProject').controller('MainCtrl', function($scope) {
   $scope.camera.rotation.x = -0.4;
   $scope.lat = -180;
   $scope.lon = 0;
-  
+
   $scope.x = 0;
   $scope.y = -30;
   $scope.z = 0;
@@ -329,7 +334,7 @@ angular.module('mysteryProject').controller('MainCtrl', function($scope) {
       var y = max + (max * noise.perlin2(now / 1000, seeds.y)) - (max / 2);
       light.position.y = y;
       mesh.position.y = y;
-      
+
       var z = (max * noise.perlin2(now / 1000, seeds.z)) - (max / 2);
       light.position.z = z;
       mesh.position.z = z;
